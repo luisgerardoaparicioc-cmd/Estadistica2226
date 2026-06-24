@@ -226,7 +226,7 @@
       .student-grid{grid-template-columns:repeat(3,1fr)}
     }
     @media print{
-      body{background:white}.hero,.toolbar,.connect-card{display:none!important}.app{width:100%;padding:0}.section-title h2{color:#111;text-shadow:none}.result-card{box-shadow:none;border:1px solid #ddd;break-inside:avoid}.card{box-shadow:none}.pill{color:#111;background:#eee;border-color:#ddd}
+      body{background:white}.hero,.toolbar{display:none!important}.app{width:100%;padding:0}.section-title h2{color:#111;text-shadow:none}.result-card{box-shadow:none;border:1px solid #ddd;break-inside:avoid}.card{box-shadow:none}.pill{color:#111;background:#eee;border-color:#ddd}
     }
   </style>
 </head>
@@ -235,12 +235,12 @@
     <header class="hero">
       <div class="school-badge"><span class="pulse-dot"></span> Ciclo escolar 2025-2026</div>
       <h1>Análisis de estadísticas de cierre<br>Escuela Secundaria General “José María Mata”</h1>
-      <p class="subtitle">Panel móvil para analizar promedios, reprobación, aprobación por disciplina y desempeño por alumno a partir de una hoja de Google Sheets.</p>
+      <p class="subtitle">Panel móvil para analizar promedios, reprobación, aprobación por disciplina y desempeño por alumno con datos conectados desde Google Sheets.</p>
     </header>
 
-    <section class="grid two">
+    <section class="grid">
       <div class="card glass">
-        <h2>1. Selección de consulta</h2>
+        <h2>Selección de consulta</h2>
         <div class="stack">
           <div>
             <label>Turno</label>
@@ -272,33 +272,6 @@
           </div>
         </div>
       </div>
-
-      <div class="card glass connect-card">
-        <h2>2. Conexión con Google Sheets</h2>
-        <div id="dataStatus" class="status info">
-          <div class="status-icon">i</div>
-          <div><b>Sin datos conectados.</b><br><span class="muted">Pega la URL CSV publicada de Google Sheets o carga un archivo CSV exportado.</span></div>
-        </div>
-        <div class="stack" style="margin-top:12px">
-          <div>
-            <label for="sheetUrl">URL CSV de Google Sheets</label>
-            <input id="sheetUrl" type="url" placeholder="https://docs.google.com/spreadsheets/d/e/.../pub?output=csv" autocomplete="off" />
-          </div>
-          <div class="row">
-            <button class="btn" id="connectBtn" type="button">Conectar</button>
-            <button class="btn secondary" id="saveUrlBtn" type="button">Guardar URL</button>
-            <button class="btn warn" id="clearDataBtn" type="button">Limpiar</button>
-          </div>
-          <div>
-            <label for="csvFile">O cargar CSV local</label>
-            <input id="csvFile" type="file" accept=".csv,text/csv" />
-          </div>
-          <details>
-            <summary><span>Campos esperados</span><span class="badge neutral">Sheets</span></summary>
-            <p class="muted" style="padding:0 12px 12px;margin:0">Grado, Grupo, Nombre completo, Español, Inglés, Artes, Matemáticas, Biología, Física, Química, Geografía, Historia, Formación Cívica y Ética, Tecnología, Educación Física, Promedio final de grado escolar y Promedio final de nivel educativo.</p>
-          </details>
-        </div>
-      </div>
     </section>
 
     <section id="analysisIntro" class="empty" style="margin-top:14px">
@@ -312,16 +285,14 @@
       <button class="btn ghost" id="printBtn" type="button">Imprimir</button>
     </div>
 
-    <p class="footer-note">Página estática compatible con GitHub Pages. No usa servidores ni librerías externas. Para conectarla permanentemente a Sheets, reemplaza la constante <b>SHEET_CSV_URL</b> en el código o guarda una URL desde esta pantalla.</p>
+    <p class="footer-note">Página estática compatible con GitHub Pages. Los datos se cargan automáticamente desde la conexión configurada con Google Sheets.</p>
   </main>
 
 <script>
 /*
-  CONFIGURACIÓN PARA GOOGLE SHEETS / GITHUB PAGES
-  1) Publica la hoja de Google Sheets como CSV.
-  2) Copia la URL CSV y pégala abajo en SHEET_CSV_URL.
-  3) Sube este archivo a GitHub Pages como index.html.
-  4) También puedes probar sin editar el código usando: index.html?sheet=URL_CSV_CODIFICADA
+  CONEXIÓN CON GOOGLE SHEETS / APPS SCRIPT
+  Pega en SHEET_CSV_URL la URL pública de tu Apps Script o CSV publicado.
+  La página cargará los datos automáticamente al abrirse en GitHub Pages.
 */
 const SHEET_CSV_URL = "https://script.google.com/macros/s/AKfycbyvGRPjvQ1uTEcHovgo2MT_n4xOXvmZDshX58okYDkwYCmOVjs0sWa6ecWNWzw9S6M7PA/exec";
 const PASSING_GRADE = 6;
@@ -349,6 +320,7 @@ const VIEWS = [
 ];
 let state = {
   data: [],
+  loadStatus: null,
   turno: "matutino",
   grado: "",
   groups: new Set(),
@@ -433,14 +405,17 @@ function rowsToObjects(rows){
   }).filter(r => r.Grado && r.Grupo && r["Nombre completo"]);
 }
 function setStatus(type, title, message){
+  state.loadStatus = {type, title, message};
   const box = $('#dataStatus');
-  box.className = `status ${type}`;
-  box.innerHTML = `<div class="status-icon">${type==='good'?'✓':type==='bad'?'!':'i'}</div><div><b>${esc(title)}</b><br><span class="muted">${esc(message)}</span></div>`;
+  if(box){
+    box.className = `status ${type}`;
+    box.innerHTML = `<div class="status-icon">${type==='good'?'✓':type==='bad'?'!':'i'}</div><div><b>${esc(title)}</b><br><span class="muted">${esc(message)}</span></div>`;
+  }
 }
 async function loadFromUrl(url){
-  if(!url) { setStatus('bad','Falta la URL','Pega la URL CSV publicada de Google Sheets.'); return; }
+  if(!url) { setStatus('bad','Falta la conexión','Pega la URL de Apps Script o CSV en la constante SHEET_CSV_URL.'); return; }
   try{
-    setStatus('info','Conectando...','Leyendo datos desde Google Sheets.');
+    setStatus('info','Cargando datos','Leyendo información desde Google Sheets.');
     const sep = url.includes('?') ? '&' : '?';
     const res = await fetch(url + sep + '_=' + Date.now(), {cache:'no-store'});
     if(!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -451,7 +426,7 @@ async function loadFromUrl(url){
     setStatus('good','Datos cargados',`${records.length} registros disponibles para analizar.`);
     updateUI();
   } catch(err){
-    setStatus('bad','No se pudo cargar la hoja',`${err.message}. Revisa que la hoja esté publicada como CSV o usa un Apps Script público.`);
+    setStatus('bad','No se pudo cargar la hoja',`${err.message}. Revisa la URL configurada en SHEET_CSV_URL y que el Apps Script esté publicado para cualquier usuario.`);
   }
 }
 function availableGroups(){ return state.turno === 'matutino' ? MATUTINO_GROUPS : VESPERTINO_GROUPS; }
@@ -614,7 +589,7 @@ function renderResults(){
   }
   intro.classList.add('hidden');
   if(!state.data.length){
-    res.innerHTML = `<div class="section-title"><h2>Resultados</h2><span class="pill">${state.grado}° · ${selectedGroups}</span></div><div class="empty">Aún no hay datos cargados. Conecta una hoja de Google Sheets o carga un CSV local.</div>`;
+    res.innerHTML = `<div class="section-title"><h2>Resultados</h2><span class="pill">${state.grado}° · ${selectedGroups}</span></div><div class="empty">Aún no hay datos cargados. Verifica que la URL de Google Sheets o Apps Script esté configurada en la página.</div>`;
     return;
   }
   if(!data.length){
@@ -660,9 +635,8 @@ function exportFiltered(){
   URL.revokeObjectURL(a.href);
 }
 function init(){
-  const saved = localStorage.getItem('jmm_sheet_csv_url') || '';
   const urlParam = new URLSearchParams(location.search).get('sheet') || '';
-  $('#sheetUrl').value = urlParam || saved || SHEET_CSV_URL;
+  const dataUrl = urlParam || SHEET_CSV_URL;
   $('#turnoBtns').addEventListener('click', e => {
     const btn = e.target.closest('[data-turno]'); if(!btn) return;
     state.turno = btn.dataset.turno;
@@ -692,27 +666,11 @@ function init(){
     if(state.views.size === 0) state.views.add('resumen');
     updateUI();
   });
-  $('#connectBtn').addEventListener('click', () => loadFromUrl($('#sheetUrl').value.trim()));
-  $('#saveUrlBtn').addEventListener('click', () => { localStorage.setItem('jmm_sheet_csv_url', $('#sheetUrl').value.trim()); setStatus('good','URL guardada','Esta URL se usará automáticamente en este dispositivo.'); });
-  $('#clearDataBtn').addEventListener('click', () => { state.data=[]; localStorage.removeItem('jmm_sheet_csv_url'); $('#sheetUrl').value=''; setStatus('info','Datos limpiados','Puedes conectar otra hoja o cargar un CSV local.'); updateUI(); });
-  $('#csvFile').addEventListener('change', e => {
-    const file = e.target.files?.[0]; if(!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      try{
-        const records = rowsToObjects(parseCSV(reader.result));
-        if(!records.length) throw new Error('El CSV no contiene registros válidos.');
-        state.data = records;
-        setStatus('good','CSV cargado',`${records.length} registros disponibles para analizar.`);
-        updateUI();
-      } catch(err){ setStatus('bad','No se pudo leer el CSV',err.message); }
-    };
-    reader.readAsText(file, 'utf-8');
-  });
   $('#exportBtn').addEventListener('click', exportFiltered);
   $('#printBtn').addEventListener('click', () => window.print());
   updateUI();
-  if($('#sheetUrl').value.trim()) loadFromUrl($('#sheetUrl').value.trim());
+  if(dataUrl) loadFromUrl(dataUrl);
+  else setStatus('bad','Sin URL configurada','Pega la URL de Apps Script o CSV en SHEET_CSV_URL dentro del archivo index.html.');
 }
 document.addEventListener('DOMContentLoaded', init);
 </script>
