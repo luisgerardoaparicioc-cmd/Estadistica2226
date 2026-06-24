@@ -1,0 +1,720 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f766e" />
+  <title>Estadísticas de cierre 2025-2026 | José María Mata</title>
+  <style>
+    :root{
+      --bg:#07111f;
+      --card:rgba(255,255,255,.95);
+      --card2:rgba(255,255,255,.86);
+      --text:#0f172a;
+      --muted:#64748b;
+      --line:#dbe4f0;
+      --primary:#0f766e;
+      --primary2:#14b8a6;
+      --accent:#f59e0b;
+      --danger:#dc2626;
+      --good:#16a34a;
+      --info:#2563eb;
+      --violet:#7c3aed;
+      --shadow:0 18px 50px rgba(2, 8, 23, .22);
+      --radius:22px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family:Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at 15% 12%, rgba(20,184,166,.36), transparent 32%),
+        radial-gradient(circle at 88% 8%, rgba(245,158,11,.30), transparent 28%),
+        radial-gradient(circle at 50% 110%, rgba(124,58,237,.35), transparent 38%),
+        linear-gradient(135deg,#07111f 0%, #0f172a 50%, #042f2e 100%);
+      overflow-x:hidden;
+    }
+    .app{width:min(1120px,100%); margin:0 auto; padding:14px 14px 90px}
+    .hero{
+      position:relative;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.20);
+      background:linear-gradient(145deg, rgba(255,255,255,.18), rgba(255,255,255,.06));
+      color:white;
+      border-radius:30px;
+      padding:24px 18px 20px;
+      box-shadow:var(--shadow);
+      isolation:isolate;
+      animation:dropIn .65s ease both;
+    }
+    .hero:before,.hero:after{
+      content:"";
+      position:absolute;
+      border-radius:999px;
+      filter:blur(2px);
+      opacity:.7;
+      z-index:-1;
+      animation:float 8s ease-in-out infinite;
+    }
+    .hero:before{width:180px;height:180px;background:rgba(20,184,166,.35);right:-70px;top:-70px}
+    .hero:after{width:140px;height:140px;background:rgba(245,158,11,.32);left:-42px;bottom:-58px;animation-delay:-2s}
+    .school-badge{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:8px 12px;
+      border-radius:999px;
+      background:rgba(255,255,255,.14);
+      border:1px solid rgba(255,255,255,.18);
+      backdrop-filter:blur(10px);
+      font-size:.85rem;
+      letter-spacing:.02em;
+    }
+    .pulse-dot{width:10px;height:10px;border-radius:999px;background:#34d399;box-shadow:0 0 0 0 rgba(52,211,153,.8);animation:pulse 1.8s infinite}
+    h1{font-size:clamp(1.55rem,7vw,3.1rem);line-height:1.02;margin:16px 0 10px;letter-spacing:-.04em}
+    .subtitle{margin:0;color:rgba(255,255,255,.82);font-size:.98rem;line-height:1.45}
+    .grid{display:grid;gap:14px;margin-top:14px}
+    .card{
+      background:var(--card);
+      border:1px solid rgba(255,255,255,.75);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:15px;
+      animation:rise .48s ease both;
+    }
+    .card.glass{background:rgba(255,255,255,.88);backdrop-filter:blur(16px)}
+    .card h2,.card h3{margin:0 0 10px;letter-spacing:-.02em}
+    .card h2{font-size:1.15rem}.card h3{font-size:1rem}
+    .muted{color:var(--muted);font-size:.88rem;line-height:1.45}
+    .small{font-size:.8rem}.tiny{font-size:.72rem;color:var(--muted)}
+    .row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .stack{display:grid;gap:10px}
+    label{font-weight:760;font-size:.86rem;color:#334155}
+    input[type="text"], input[type="url"], select{
+      width:100%;
+      min-height:47px;
+      border:1px solid var(--line);
+      border-radius:15px;
+      padding:10px 12px;
+      font-size:1rem;
+      background:#fff;
+      color:var(--text);
+      outline:none;
+      transition:.2s;
+    }
+    input:focus,select:focus{border-color:var(--primary2);box-shadow:0 0 0 4px rgba(20,184,166,.14)}
+    .segmented{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    button,.chip,.option{
+      border:0;
+      border-radius:16px;
+      cursor:pointer;
+      -webkit-tap-highlight-color:transparent;
+      transition:transform .16s ease, box-shadow .16s ease, background .16s ease, border-color .16s ease;
+      font-weight:800;
+    }
+    button:active,.chip:active,.option:active{transform:scale(.98)}
+    .btn{
+      min-height:46px;
+      padding:10px 14px;
+      background:linear-gradient(135deg,var(--primary),var(--primary2));
+      color:white;
+      box-shadow:0 12px 22px rgba(15,118,110,.24);
+    }
+    .btn.secondary{background:#eff6ff;color:#1d4ed8;box-shadow:none;border:1px solid #bfdbfe}
+    .btn.warn{background:#fff7ed;color:#c2410c;box-shadow:none;border:1px solid #fed7aa}
+    .btn.ghost{background:#f8fafc;color:#334155;box-shadow:none;border:1px solid var(--line)}
+    .seg-btn{background:#f8fafc;color:#475569;border:1px solid var(--line);min-height:46px;padding:10px}
+    .seg-btn.active{background:linear-gradient(135deg,#0f766e,#14b8a6);color:white;border-color:transparent;box-shadow:0 12px 22px rgba(15,118,110,.22)}
+    .group-zone,.views-zone{display:none}.group-zone.show,.views-zone.show{display:block;animation:rise .35s ease both}
+    .chips{display:flex;gap:8px;flex-wrap:wrap}
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width:48px;
+      min-height:44px;
+      padding:9px 13px;
+      background:#f8fafc;
+      color:#334155;
+      border:1px solid var(--line);
+      position:relative;
+    }
+    .chip span{font-size:.72rem;font-weight:700;color:#64748b;margin-left:5px}
+    .chip.active{background:linear-gradient(135deg,#f59e0b,#f97316);color:white;border-color:transparent;box-shadow:0 10px 20px rgba(249,115,22,.24)}
+    .chip.active span{color:rgba(255,255,255,.84)}
+    .options{display:grid;grid-template-columns:1fr;gap:8px}
+    .option{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:11px;
+      background:#f8fafc;
+      border:1px solid var(--line);
+      color:#334155;
+      text-align:left;
+    }
+    .option .check{
+      width:22px;height:22px;border-radius:8px;border:2px solid #cbd5e1;display:grid;place-items:center;flex:0 0 auto;
+      font-size:.8rem;color:white;
+    }
+    .option.active{background:#ecfeff;border-color:#67e8f9;color:#0f766e}
+    .option.active .check{background:var(--primary);border-color:var(--primary)}
+    .status{
+      display:flex;align-items:flex-start;gap:10px;padding:12px;border-radius:18px;background:#f8fafc;border:1px dashed #cbd5e1;
+    }
+    .status.good{background:#ecfdf5;border-color:#86efac}.status.bad{background:#fef2f2;border-color:#fecaca}.status.info{background:#eff6ff;border-color:#bfdbfe}
+    .status-icon{width:30px;height:30px;border-radius:12px;display:grid;place-items:center;color:white;background:var(--info);flex:0 0 auto;font-weight:900}
+    .status.good .status-icon{background:var(--good)}.status.bad .status-icon{background:var(--danger)}
+    .kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    .kpi{
+      position:relative;
+      overflow:hidden;
+      padding:14px;
+      border-radius:20px;
+      background:linear-gradient(145deg,#fff,#f8fafc);
+      border:1px solid var(--line);
+      min-height:98px;
+    }
+    .kpi:after{content:"";position:absolute;right:-28px;bottom:-32px;width:90px;height:90px;border-radius:999px;background:rgba(20,184,166,.10)}
+    .kpi .num{font-size:1.8rem;line-height:1;font-weight:950;letter-spacing:-.05em;color:#0f172a}
+    .kpi .lbl{margin-top:7px;color:var(--muted);font-size:.78rem;font-weight:750}
+    .kpi.good .num{color:var(--good)}.kpi.bad .num{color:var(--danger)}.kpi.info .num{color:var(--info)}.kpi.warn .num{color:#c2410c}
+    .section-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:18px 0 10px}
+    .section-title h2{font-size:1.12rem;margin:0;color:white;text-shadow:0 1px 1px rgba(0,0,0,.15)}
+    .pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:7px 10px;background:rgba(255,255,255,.16);color:white;border:1px solid rgba(255,255,255,.18);font-size:.75rem;font-weight:800}
+    .result-card{background:var(--card);border:1px solid rgba(255,255,255,.8);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px;margin:10px 0;animation:rise .35s ease both}
+    .table-wrap{width:100%;overflow:auto;border:1px solid var(--line);border-radius:17px;background:white}
+    table{border-collapse:collapse;width:100%;min-width:680px;background:white}
+    th,td{padding:10px 9px;border-bottom:1px solid #e2e8f0;text-align:left;font-size:.83rem;white-space:nowrap}
+    th{position:sticky;top:0;background:#0f766e;color:white;z-index:1;font-size:.76rem;letter-spacing:.02em;text-transform:uppercase}
+    tr:last-child td{border-bottom:0}
+    tr:hover td{background:#f8fafc}
+    .barline{display:flex;align-items:center;gap:9px;min-width:160px}
+    .bar-bg{height:10px;flex:1;background:#e2e8f0;border-radius:999px;overflow:hidden}
+    .bar{height:100%;width:0%;background:linear-gradient(90deg,var(--primary),var(--primary2));border-radius:999px;transition:width .7s ease}
+    .bar.bad{background:linear-gradient(90deg,#dc2626,#f97316)}
+    .bar.warn{background:linear-gradient(90deg,#f59e0b,#facc15)}
+    .rank-list{display:grid;gap:8px}
+    .rank-item{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;padding:10px;border:1px solid var(--line);border-radius:17px;background:#fff}
+    .rank-num{width:32px;height:32px;border-radius:12px;display:grid;place-items:center;background:#ecfeff;color:#0f766e;font-weight:950}
+    .student-name{font-weight:900;line-height:1.15}.student-meta{font-size:.78rem;color:var(--muted);margin-top:3px}
+    .badge{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;padding:5px 8px;font-size:.74rem;font-weight:900;white-space:nowrap}
+    .badge.good{background:#dcfce7;color:#166534}.badge.bad{background:#fee2e2;color:#991b1b}.badge.warn{background:#fef3c7;color:#92400e}.badge.info{background:#dbeafe;color:#1e40af}.badge.neutral{background:#f1f5f9;color:#334155}.bad-text{color:var(--danger)}
+    details{border:1px solid var(--line);border-radius:17px;background:white;overflow:hidden}
+    summary{list-style:none;padding:12px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;font-weight:900}
+    summary::-webkit-details-marker{display:none}
+    .student-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 12px 12px}
+    .grade-box{border-radius:14px;border:1px solid #e2e8f0;padding:9px;background:#f8fafc}
+    .grade-box b{display:block;font-size:.75rem;color:#475569;margin-bottom:4px}.grade-box span{font-weight:900}
+    .empty{padding:18px;border-radius:22px;background:rgba(255,255,255,.90);border:1px dashed #cbd5e1;text-align:center;color:#475569;animation:rise .35s ease both}
+    .toolbar{position:sticky;bottom:10px;z-index:20;margin:18px 0 0;display:flex;gap:8px;justify-content:center}
+    .toolbar .btn{box-shadow:0 14px 35px rgba(2,8,23,.25)}
+    .hidden{display:none!important}
+    .footer-note{margin-top:16px;color:rgba(255,255,255,.75);font-size:.78rem;line-height:1.45;text-align:center}
+    .install-note{display:none}
+    @keyframes pulse{70%{box-shadow:0 0 0 10px rgba(52,211,153,0)}100%{box-shadow:0 0 0 0 rgba(52,211,153,0)}}
+    @keyframes dropIn{from{opacity:0;transform:translateY(-16px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+    @keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes float{0%,100%{transform:translate3d(0,0,0)}50%{transform:translate3d(12px,-10px,0)}}
+    @media (min-width:760px){
+      .app{padding:22px 22px 100px}.hero{padding:34px 28px}
+      .grid.two{grid-template-columns:1.05fr .95fr}.grid.three{grid-template-columns:repeat(3,1fr)}
+      .options{grid-template-columns:repeat(2,1fr)}.kpis{grid-template-columns:repeat(4,1fr)}
+      .student-grid{grid-template-columns:repeat(3,1fr)}
+    }
+    @media print{
+      body{background:white}.hero,.toolbar,.connect-card{display:none!important}.app{width:100%;padding:0}.section-title h2{color:#111;text-shadow:none}.result-card{box-shadow:none;border:1px solid #ddd;break-inside:avoid}.card{box-shadow:none}.pill{color:#111;background:#eee;border-color:#ddd}
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="hero">
+      <div class="school-badge"><span class="pulse-dot"></span> Ciclo escolar 2025-2026</div>
+      <h1>Análisis de estadísticas de cierre<br>Escuela Secundaria General “José María Mata”</h1>
+      <p class="subtitle">Panel móvil para analizar promedios, reprobación, aprobación por disciplina y desempeño por alumno a partir de una hoja de Google Sheets.</p>
+    </header>
+
+    <section class="grid two">
+      <div class="card glass">
+        <h2>1. Selección de consulta</h2>
+        <div class="stack">
+          <div>
+            <label>Turno</label>
+            <div class="segmented" id="turnoBtns">
+              <button class="seg-btn active" data-turno="matutino">Matutino</button>
+              <button class="seg-btn" data-turno="vespertino">Vespertino</button>
+            </div>
+          </div>
+          <div>
+            <label for="gradeSelect">Grado</label>
+            <select id="gradeSelect" aria-label="Seleccionar grado">
+              <option value="">Selecciona un grado</option>
+              <option value="1">1°</option>
+              <option value="2">2°</option>
+              <option value="3">3°</option>
+            </select>
+          </div>
+          <div class="group-zone" id="groupZone">
+            <div class="row" style="justify-content:space-between;margin-bottom:8px">
+              <label>Grupos</label>
+              <button class="btn ghost" id="toggleAllGroups" type="button" style="min-height:34px;padding:6px 10px;font-size:.78rem">Seleccionar todos</button>
+            </div>
+            <div class="chips" id="groupChips"></div>
+            <p class="tiny">Matutino usa A-F; vespertino usa G-L. El turno se infiere por la letra del grupo.</p>
+          </div>
+          <div class="views-zone" id="viewsZone">
+            <label>¿Qué quieres mostrar?</label>
+            <div class="options" id="viewOptions"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card glass connect-card">
+        <h2>2. Conexión con Google Sheets</h2>
+        <div id="dataStatus" class="status info">
+          <div class="status-icon">i</div>
+          <div><b>Sin datos conectados.</b><br><span class="muted">Pega la URL CSV publicada de Google Sheets o carga un archivo CSV exportado.</span></div>
+        </div>
+        <div class="stack" style="margin-top:12px">
+          <div>
+            <label for="sheetUrl">URL CSV de Google Sheets</label>
+            <input id="sheetUrl" type="url" placeholder="https://docs.google.com/spreadsheets/d/e/.../pub?output=csv" autocomplete="off" />
+          </div>
+          <div class="row">
+            <button class="btn" id="connectBtn" type="button">Conectar</button>
+            <button class="btn secondary" id="saveUrlBtn" type="button">Guardar URL</button>
+            <button class="btn warn" id="clearDataBtn" type="button">Limpiar</button>
+          </div>
+          <div>
+            <label for="csvFile">O cargar CSV local</label>
+            <input id="csvFile" type="file" accept=".csv,text/csv" />
+          </div>
+          <details>
+            <summary><span>Campos esperados</span><span class="badge neutral">Sheets</span></summary>
+            <p class="muted" style="padding:0 12px 12px;margin:0">Grado, Grupo, Nombre completo, Español, Inglés, Artes, Matemáticas, Biología, Física, Química, Geografía, Historia, Formación Cívica y Ética, Tecnología, Educación Física, Promedio final de grado escolar y Promedio final de nivel educativo.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <section id="analysisIntro" class="empty" style="margin-top:14px">
+      Selecciona turno, grado y uno o más grupos para generar las estadísticas.
+    </section>
+
+    <section id="results" aria-live="polite"></section>
+
+    <div class="toolbar">
+      <button class="btn secondary" id="exportBtn" type="button">Exportar CSV filtrado</button>
+      <button class="btn ghost" id="printBtn" type="button">Imprimir</button>
+    </div>
+
+    <p class="footer-note">Página estática compatible con GitHub Pages. No usa servidores ni librerías externas. Para conectarla permanentemente a Sheets, reemplaza la constante <b>SHEET_CSV_URL</b> en el código o guarda una URL desde esta pantalla.</p>
+  </main>
+
+<script>
+/*
+  CONFIGURACIÓN PARA GOOGLE SHEETS / GITHUB PAGES
+  1) Publica la hoja de Google Sheets como CSV.
+  2) Copia la URL CSV y pégala abajo en SHEET_CSV_URL.
+  3) Sube este archivo a GitHub Pages como index.html.
+  4) También puedes probar sin editar el código usando: index.html?sheet=URL_CSV_CODIFICADA
+*/
+const SHEET_CSV_URL = "";
+const PASSING_GRADE = 6;
+const MATUTINO_GROUPS = ["A","B","C","D","E","F"];
+const VESPERTINO_GROUPS = ["G","H","I","J","K","L"];
+const DISCIPLINES = [
+  "Español","Inglés","Artes","Matemáticas","Biología","Física","Química","Geografía",
+  "Historia","Formación Cívica y Ética","Tecnología","Educación Física"
+];
+const REQUIRED_FIELDS = [
+  "Grado","Grupo","Nombre completo",...DISCIPLINES,
+  "Promedio final de grado escolar","Promedio final de nivel educativo"
+];
+const VIEWS = [
+  {id:"resumen", label:"Resumen general", default:true},
+  {id:"disciplina", label:"Por disciplina", default:true},
+  {id:"alumno", label:"Por alumno"},
+  {id:"reprobados", label:"Cantidad de reprobados"},
+  {id:"promDisciplina", label:"Promedio por disciplina"},
+  {id:"promAlumnos", label:"Promedio de alumnos"},
+  {id:"masReprobadas", label:"Alumnos con mayor cantidad de reprobadas"},
+  {id:"promAlto", label:"Alumnos con promedio más alto", default:true},
+  {id:"aprobadosTodas", label:"Aprobados en todas las disciplinas"},
+  {id:"rankingGrupo", label:"Ranking por grupo"}
+];
+let state = {
+  data: [],
+  turno: "matutino",
+  grado: "",
+  groups: new Set(),
+  views: new Set(VIEWS.filter(v=>v.default).map(v=>v.id)),
+  search: ""
+};
+const $ = sel => document.querySelector(sel);
+const $$ = sel => Array.from(document.querySelectorAll(sel));
+const fmt = n => Number.isFinite(n) ? (Math.round(n*10)/10).toFixed(1) : "—";
+const pct = n => Number.isFinite(n) ? `${Math.round(n)}%` : "—";
+const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[ch]));
+const normalize = txt => String(txt ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"");
+const fieldMap = new Map(REQUIRED_FIELDS.map(f => [normalize(f), f]));
+fieldMap.set("nombrealumno", "Nombre completo");
+fieldMap.set("nombre", "Nombre completo");
+fieldMap.set("nombrecompleto", "Nombre completo");
+fieldMap.set("formacioncivicayetica", "Formación Cívica y Ética");
+fieldMap.set("educacionfisica", "Educación Física");
+fieldMap.set("promediofinaldegrado", "Promedio final de grado escolar");
+fieldMap.set("promediofinalgradoescolar", "Promedio final de grado escolar");
+fieldMap.set("promediofinaldenivel", "Promedio final de nivel educativo");
+fieldMap.set("promediofinalniveleducativo", "Promedio final de nivel educativo");
+fieldMap.set("espanol", "Español");
+fieldMap.set("ingles", "Inglés");
+fieldMap.set("matematicas", "Matemáticas");
+fieldMap.set("fisica", "Física");
+fieldMap.set("quimica", "Química");
+fieldMap.set("geografia", "Geografía");
+
+function parseCSV(text){
+  const rows = [];
+  let row = [], cell = "", quote = false;
+  text = String(text || "").replace(/^\uFEFF/, "");
+  for(let i=0;i<text.length;i++){
+    const c = text[i], next = text[i+1];
+    if(c === '"'){
+      if(quote && next === '"'){ cell += '"'; i++; }
+      else quote = !quote;
+    } else if(c === ',' && !quote){ row.push(cell); cell = ""; }
+    else if((c === '\n' || c === '\r') && !quote){
+      if(c === '\r' && next === '\n') i++;
+      row.push(cell); cell = "";
+      if(row.some(v => String(v).trim() !== "")) rows.push(row);
+      row = [];
+    } else cell += c;
+  }
+  row.push(cell);
+  if(row.some(v => String(v).trim() !== "")) rows.push(row);
+  return rows;
+}
+function parseNumber(value){
+  const raw = String(value ?? "").trim();
+  if(!raw || raw === "---" || /^na$/i.test(raw) || /^ne$/i.test(raw)) return null;
+  const clean = raw.replace(/,/g,".").replace(/[^0-9.\-]/g,"");
+  if(!clean) return null;
+  const n = Number(clean);
+  return Number.isFinite(n) ? n : null;
+}
+function normalizeGrade(value){
+  const s = String(value ?? "").trim();
+  const n = (s.match(/[123]/) || [""])[0];
+  return n;
+}
+function normalizeGroup(value){
+  return String(value ?? "").trim().toUpperCase().replace(/[^A-Z]/g,"").slice(0,1);
+}
+function rowsToObjects(rows){
+  if(!rows.length) return [];
+  const headers = rows[0].map(h => fieldMap.get(normalize(h)) || h.trim());
+  return rows.slice(1).map(row => {
+    const obj = {};
+    headers.forEach((h,i) => { if(h) obj[h] = String(row[i] ?? "").trim(); });
+    const record = {};
+    REQUIRED_FIELDS.forEach(f => record[f] = obj[f] ?? "");
+    record.Grado = normalizeGrade(record.Grado);
+    record.Grupo = normalizeGroup(record.Grupo);
+    record["Nombre completo"] = String(record["Nombre completo"] || "").trim();
+    DISCIPLINES.forEach(d => record[d] = parseNumber(record[d]));
+    record["Promedio final de grado escolar"] = parseNumber(record["Promedio final de grado escolar"]);
+    record["Promedio final de nivel educativo"] = parseNumber(record["Promedio final de nivel educativo"]);
+    return record;
+  }).filter(r => r.Grado && r.Grupo && r["Nombre completo"]);
+}
+function setStatus(type, title, message){
+  const box = $('#dataStatus');
+  box.className = `status ${type}`;
+  box.innerHTML = `<div class="status-icon">${type==='good'?'✓':type==='bad'?'!':'i'}</div><div><b>${esc(title)}</b><br><span class="muted">${esc(message)}</span></div>`;
+}
+async function loadFromUrl(url){
+  if(!url) { setStatus('bad','Falta la URL','Pega la URL CSV publicada de Google Sheets.'); return; }
+  try{
+    setStatus('info','Conectando...','Leyendo datos desde Google Sheets.');
+    const sep = url.includes('?') ? '&' : '?';
+    const res = await fetch(url + sep + '_=' + Date.now(), {cache:'no-store'});
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    const text = await res.text();
+    const records = rowsToObjects(parseCSV(text));
+    if(!records.length) throw new Error('No se encontraron registros válidos.');
+    state.data = records;
+    setStatus('good','Datos cargados',`${records.length} registros disponibles para analizar.`);
+    updateUI();
+  } catch(err){
+    setStatus('bad','No se pudo cargar la hoja',`${err.message}. Revisa que la hoja esté publicada como CSV o usa un Apps Script público.`);
+  }
+}
+function availableGroups(){ return state.turno === 'matutino' ? MATUTINO_GROUPS : VESPERTINO_GROUPS; }
+function groupCount(group){ return state.data.filter(r => r.Grado === state.grado && r.Grupo === group).length; }
+function filteredData(){
+  let data = state.data.filter(r => r.Grado === state.grado && state.groups.has(r.Grupo));
+  if(state.search.trim()){
+    const q = normalize(state.search);
+    data = data.filter(r => normalize(r["Nombre completo"]).includes(q));
+  }
+  return data;
+}
+function validGrades(record){
+  return DISCIPLINES.map(d => ({name:d, value:record[d]})).filter(x => Number.isFinite(x.value));
+}
+function studentAverage(record){
+  const official = record["Promedio final de grado escolar"];
+  if(Number.isFinite(official)) return official;
+  const grades = validGrades(record).map(x => x.value);
+  return grades.length ? grades.reduce((a,b)=>a+b,0)/grades.length : null;
+}
+function studentStats(data){
+  return data.map(r => {
+    const grades = validGrades(r);
+    const failed = grades.filter(g => g.value < PASSING_GRADE);
+    const passed = grades.filter(g => g.value >= PASSING_GRADE);
+    return {...r, _avg:studentAverage(r), _failed:failed.length, _passed:passed.length, _valid:grades.length, _failedList:failed.map(f=>f.name)};
+  });
+}
+function disciplineStats(data){
+  return DISCIPLINES.map(d => {
+    const values = data.map(r => r[d]).filter(Number.isFinite);
+    const total = values.length;
+    const failed = values.filter(v => v < PASSING_GRADE).length;
+    const passed = values.filter(v => v >= PASSING_GRADE).length;
+    const avg = total ? values.reduce((a,b)=>a+b,0)/total : null;
+    return {discipline:d,total,avg,failed,passed,passPct:total ? passed/total*100 : null, failPct:total ? failed/total*100 : null, min:total?Math.min(...values):null, max:total?Math.max(...values):null};
+  }).filter(s => s.total > 0);
+}
+function groupStats(data){
+  return Array.from(state.groups).sort().map(g => {
+    const subset = data.filter(r => r.Grupo === g);
+    const st = studentStats(subset);
+    const avgs = st.map(s => s._avg).filter(Number.isFinite);
+    const failedStudents = st.filter(s => s._failed > 0).length;
+    return {group:g,total:subset.length,avg:avgs.length?avgs.reduce((a,b)=>a+b,0)/avgs.length:null,failedStudents,allPassed:st.filter(s=>s._valid>0 && s._failed===0).length};
+  });
+}
+function renderGroupChips(){
+  const zone = $('#groupZone');
+  const chips = $('#groupChips');
+  zone.classList.toggle('show', !!state.grado);
+  chips.innerHTML = availableGroups().map(g => {
+    const active = state.groups.has(g);
+    const count = groupCount(g);
+    return `<button type="button" class="chip ${active?'active':''}" data-group="${g}">${g}<span>${count}</span></button>`;
+  }).join('');
+}
+function renderViews(){
+  $('#viewsZone').classList.toggle('show', state.groups.size > 0);
+  $('#viewOptions').innerHTML = VIEWS.map(v => `<button type="button" class="option ${state.views.has(v.id)?'active':''}" data-view="${v.id}"><span class="check">✓</span><span>${esc(v.label)}</span></button>`).join('');
+}
+function renderKpis(data){
+  const st = studentStats(data);
+  const avgValues = st.map(s => s._avg).filter(Number.isFinite);
+  const globalAvg = avgValues.length ? avgValues.reduce((a,b)=>a+b,0)/avgValues.length : null;
+  const withFailed = st.filter(s => s._failed > 0).length;
+  const allPassed = st.filter(s => s._valid > 0 && s._failed === 0).length;
+  const totalFails = st.reduce((sum,s)=>sum+s._failed,0);
+  return `<div class="kpis">
+    <div class="kpi info"><div class="num">${data.length}</div><div class="lbl">Alumnos seleccionados</div></div>
+    <div class="kpi good"><div class="num">${fmt(globalAvg)}</div><div class="lbl">Promedio general</div></div>
+    <div class="kpi bad"><div class="num">${withFailed}</div><div class="lbl">Alumnos con alguna reprobada</div></div>
+    <div class="kpi warn"><div class="num">${allPassed}</div><div class="lbl">Aprobados en todas</div></div>
+  </div>
+  <div class="kpis" style="margin-top:10px">
+    <div class="kpi"><div class="num">${totalFails}</div><div class="lbl">Reprobadas acumuladas</div></div>
+    <div class="kpi"><div class="num">${pct(data.length ? allPassed/data.length*100 : null)}</div><div class="lbl">Aprobación total</div></div>
+    <div class="kpi"><div class="num">${pct(data.length ? withFailed/data.length*100 : null)}</div><div class="lbl">Alumnos en riesgo</div></div>
+    <div class="kpi"><div class="num">${state.grado || '—'}°</div><div class="lbl">Grado analizado</div></div>
+  </div>`;
+}
+function table(headers, rows){
+  return `<div class="table-wrap"><table><thead><tr>${headers.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></div>`;
+}
+function renderDiscipline(data, onlyAverage=false){
+  const stats = disciplineStats(data);
+  const headers = onlyAverage ? ['Disciplina','Promedio','Alumnos evaluados','Visual'] : ['Disciplina','Promedio','Aprobados','Reprobados','% aprobación','Mín.','Máx.'];
+  const rows = stats.map(s => {
+    const barClass = s.avg < 6 ? 'bad' : s.avg < 7.5 ? 'warn' : '';
+    const bar = `<div class="barline"><span>${fmt(s.avg)}</span><div class="bar-bg"><div class="bar ${barClass}" style="width:${Math.max(0,Math.min(100,(s.avg||0)*10))}%"></div></div></div>`;
+    if(onlyAverage) return `<tr><td>${esc(s.discipline)}</td><td><b>${fmt(s.avg)}</b></td><td>${s.total}</td><td>${bar}</td></tr>`;
+    return `<tr><td>${esc(s.discipline)}</td><td>${bar}</td><td><span class="badge good">${s.passed}</span></td><td><span class="badge ${s.failed?'bad':'good'}">${s.failed}</span></td><td>${pct(s.passPct)}</td><td>${fmt(s.min)}</td><td>${fmt(s.max)}</td></tr>`;
+  });
+  return table(headers, rows);
+}
+function renderFailed(data){
+  const byDiscipline = disciplineStats(data).sort((a,b)=>b.failed-a.failed);
+  const disciplineRows = byDiscipline.map(s => `<tr><td>${esc(s.discipline)}</td><td><span class="badge ${s.failed?'bad':'good'}">${s.failed}</span></td><td>${s.total}</td><td>${pct(s.failPct)}</td></tr>`);
+  const byGroup = groupStats(data).map(g => `<tr><td>${g.group}</td><td>${g.total}</td><td><span class="badge ${g.failedStudents?'bad':'good'}">${g.failedStudents}</span></td><td>${g.allPassed}</td><td>${fmt(g.avg)}</td></tr>`);
+  return `<h3>Reprobación por disciplina</h3>${table(['Disciplina','Reprobados','Evaluados','% reprobación'], disciplineRows)}
+  <h3 style="margin-top:14px">Reprobación por grupo</h3>${table(['Grupo','Alumnos','Con reprobadas','Aprobados en todas','Promedio'], byGroup)}`;
+}
+function renderStudentAverage(data){
+  const st = studentStats(data).sort((a,b)=>(b._avg??-1)-(a._avg??-1));
+  const rows = st.map(s => `<tr><td>${s.Grupo}</td><td>${esc(s['Nombre completo'])}</td><td><b>${fmt(s._avg)}</b></td><td>${s._failed ? `<span class="badge bad">${s._failed}</span>` : `<span class="badge good">0</span>`}</td><td>${s._failedList.map(esc).join(', ') || '—'}</td></tr>`);
+  return table(['Grupo','Alumno','Promedio','Reprobadas','Disciplinas reprobadas'], rows);
+}
+function renderTop(data){
+  const st = studentStats(data).filter(s=>Number.isFinite(s._avg)).sort((a,b)=>b._avg-a._avg || a['Nombre completo'].localeCompare(b['Nombre completo'])).slice(0,15);
+  return `<div class="rank-list">${st.map((s,i)=>`<div class="rank-item"><div class="rank-num">${i+1}</div><div><div class="student-name">${esc(s['Nombre completo'])}</div><div class="student-meta">${s.Grado}° ${s.Grupo} · ${s._failed} reprobadas</div></div><span class="badge good">${fmt(s._avg)}</span></div>`).join('')}</div>`;
+}
+function renderMostFailed(data){
+  const st = studentStats(data).filter(s=>s._failed>0).sort((a,b)=>b._failed-a._failed || (a._avg??99)-(b._avg??99)).slice(0,30);
+  if(!st.length) return `<div class="empty">No hay alumnos con disciplinas reprobadas en la selección.</div>`;
+  return `<div class="rank-list">${st.map((s,i)=>`<div class="rank-item"><div class="rank-num">${i+1}</div><div><div class="student-name">${esc(s['Nombre completo'])}</div><div class="student-meta">${s.Grado}° ${s.Grupo} · ${esc(s._failedList.join(', '))}</div></div><span class="badge bad">${s._failed}</span></div>`).join('')}</div>`;
+}
+function renderAllPassed(data){
+  const st = studentStats(data).filter(s => s._valid > 0 && s._failed === 0).sort((a,b)=>(b._avg??0)-(a._avg??0));
+  return `<div class="status good" style="margin-bottom:10px"><div class="status-icon">✓</div><div><b>${st.length} alumnos aprobados en todas las disciplinas.</b><br><span class="muted">Representan ${pct(data.length ? st.length/data.length*100 : null)} de la selección.</span></div></div>` +
+    table(['Grupo','Alumno','Promedio'], st.map(s => `<tr><td>${s.Grupo}</td><td>${esc(s['Nombre completo'])}</td><td><b>${fmt(s._avg)}</b></td></tr>`));
+}
+function renderRankingGroup(data){
+  const stats = groupStats(data).sort((a,b)=>(b.avg??0)-(a.avg??0));
+  const rows = stats.map((g,i)=>`<tr><td>${i+1}</td><td>${g.group}</td><td>${g.total}</td><td><b>${fmt(g.avg)}</b></td><td>${g.allPassed}</td><td>${g.failedStudents}</td></tr>`);
+  return table(['Lugar','Grupo','Alumnos','Promedio','Aprobados en todas','Con reprobadas'], rows);
+}
+function renderDistribution(data){
+  const st = studentStats(data).filter(s => Number.isFinite(s._avg));
+  const ranges = [
+    {label:'9.0 a 10', min:9, max:10.1, cls:'good'},
+    {label:'8.0 a 8.9', min:8, max:9, cls:'info'},
+    {label:'7.0 a 7.9', min:7, max:8, cls:'warn'},
+    {label:'6.0 a 6.9', min:6, max:7, cls:'warn'},
+    {label:'Menor a 6', min:-1, max:6, cls:'bad'}
+  ];
+  const rows = ranges.map(r => {
+    const count = st.filter(s => s._avg >= r.min && s._avg < r.max).length;
+    const w = st.length ? count/st.length*100 : 0;
+    return `<tr><td><span class="badge ${r.cls}">${r.label}</span></td><td>${count}</td><td><div class="barline"><span>${pct(w)}</span><div class="bar-bg"><div class="bar ${r.cls==='bad'?'bad':r.cls==='warn'?'warn':''}" style="width:${w}%"></div></div></div></td></tr>`;
+  });
+  return table(['Rango de promedio','Alumnos','Distribución'], rows);
+}
+function renderByStudent(data){
+  const st = studentStats(data).sort((a,b)=>a.Grupo.localeCompare(b.Grupo) || a['Nombre completo'].localeCompare(b['Nombre completo']));
+  return `<div class="stack">${st.map(s => {
+    const gradeBoxes = DISCIPLINES.filter(d => Number.isFinite(s[d])).map(d => `<div class="grade-box"><b>${esc(d)}</b><span class="${s[d] < PASSING_GRADE ? 'bad-text' : ''}">${fmt(s[d])}</span></div>`).join('');
+    return `<details><summary><span>${esc(s['Nombre completo'])}<br><span class="student-meta">${s.Grado}° ${s.Grupo} · Promedio ${fmt(s._avg)}</span></span>${s._failed ? `<span class="badge bad">${s._failed} rep.</span>`:`<span class="badge good">Aprobado</span>`}</summary><div class="student-grid">${gradeBoxes}</div></details>`;
+  }).join('')}</div>`;
+}
+function renderResults(){
+  const res = $('#results');
+  const intro = $('#analysisIntro');
+  const data = filteredData();
+  const selectedGroups = Array.from(state.groups).sort().join(', ');
+  if(!state.grado || state.groups.size === 0){
+    intro.classList.remove('hidden');
+    res.innerHTML = '';
+    return;
+  }
+  intro.classList.add('hidden');
+  if(!state.data.length){
+    res.innerHTML = `<div class="section-title"><h2>Resultados</h2><span class="pill">${state.grado}° · ${selectedGroups}</span></div><div class="empty">Aún no hay datos cargados. Conecta una hoja de Google Sheets o carga un CSV local.</div>`;
+    return;
+  }
+  if(!data.length){
+    res.innerHTML = `<div class="section-title"><h2>Resultados</h2><span class="pill">${state.grado}° · ${selectedGroups}</span></div><div class="empty">No se encontraron registros para la selección actual.</div>`;
+    return;
+  }
+  const parts = [`<div class="section-title"><h2>Resultados</h2><span class="pill">${state.turno} · ${state.grado}° · ${selectedGroups}</span></div>`];
+  if(state.views.has('resumen')) parts.push(`<article class="result-card"><h2>Resumen general</h2>${renderKpis(data)}<div style="margin-top:12px"><label for="searchStudent">Buscar alumno en la selección</label><input id="searchStudent" type="text" placeholder="Escribe parte del nombre..." value="${esc(state.search)}"></div></article>`);
+  if(state.views.has('disciplina')) parts.push(`<article class="result-card"><h2>Estadísticas por disciplina</h2>${renderDiscipline(data,false)}</article>`);
+  if(state.views.has('reprobados')) parts.push(`<article class="result-card"><h2>Cantidad de reprobados</h2>${renderFailed(data)}</article>`);
+  if(state.views.has('promDisciplina')) parts.push(`<article class="result-card"><h2>Promedio por disciplina</h2>${renderDiscipline(data,true)}</article>`);
+  if(state.views.has('promAlumnos')) parts.push(`<article class="result-card"><h2>Promedio de alumnos</h2>${renderDistribution(data)}<h3 style="margin-top:14px">Listado por promedio</h3>${renderStudentAverage(data)}</article>`);
+  if(state.views.has('masReprobadas')) parts.push(`<article class="result-card"><h2>Alumnos con mayor cantidad de reprobadas</h2>${renderMostFailed(data)}</article>`);
+  if(state.views.has('promAlto')) parts.push(`<article class="result-card"><h2>Alumnos con promedio más alto</h2>${renderTop(data)}</article>`);
+  if(state.views.has('aprobadosTodas')) parts.push(`<article class="result-card"><h2>Aprobados en todas las disciplinas</h2>${renderAllPassed(data)}</article>`);
+  if(state.views.has('rankingGrupo')) parts.push(`<article class="result-card"><h2>Ranking por grupo</h2>${renderRankingGroup(data)}</article>`);
+  if(state.views.has('alumno')) parts.push(`<article class="result-card"><h2>Análisis por alumno</h2>${renderByStudent(data)}</article>`);
+  res.innerHTML = parts.join('');
+  const search = $('#searchStudent');
+  if(search){
+    search.addEventListener('input', e => { state.search = e.target.value; renderResults(); setTimeout(()=>$('#searchStudent')?.focus(),0); });
+  }
+}
+function updateUI(){
+  renderGroupChips();
+  renderViews();
+  renderResults();
+}
+function csvEscape(v){
+  const s = String(v ?? '');
+  return /[",\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
+}
+function exportFiltered(){
+  const data = filteredData();
+  if(!data.length){ alert('No hay datos filtrados para exportar.'); return; }
+  const rows = [REQUIRED_FIELDS, ...data.map(r => REQUIRED_FIELDS.map(f => Number.isFinite(r[f]) ? r[f] : (r[f] ?? '')))];
+  const csv = rows.map(row => row.map(csvEscape).join(',')).join('\n');
+  const blob = new Blob(["\uFEFF" + csv], {type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `estadisticas_${state.grado}_${Array.from(state.groups).join('-')}.csv`;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(a.href);
+}
+function init(){
+  const saved = localStorage.getItem('jmm_sheet_csv_url') || '';
+  const urlParam = new URLSearchParams(location.search).get('sheet') || '';
+  $('#sheetUrl').value = urlParam || saved || SHEET_CSV_URL;
+  $('#turnoBtns').addEventListener('click', e => {
+    const btn = e.target.closest('[data-turno]'); if(!btn) return;
+    state.turno = btn.dataset.turno;
+    state.groups.clear(); state.search = '';
+    $$('#turnoBtns .seg-btn').forEach(b => b.classList.toggle('active', b === btn));
+    updateUI();
+  });
+  $('#gradeSelect').addEventListener('change', e => { state.grado = e.target.value; state.groups.clear(); state.search = ''; updateUI(); });
+  $('#groupChips').addEventListener('click', e => {
+    const chip = e.target.closest('[data-group]'); if(!chip) return;
+    const g = chip.dataset.group;
+    state.groups.has(g) ? state.groups.delete(g) : state.groups.add(g);
+    state.search = '';
+    updateUI();
+  });
+  $('#toggleAllGroups').addEventListener('click', () => {
+    const groups = availableGroups();
+    const allSelected = groups.every(g => state.groups.has(g));
+    state.groups = new Set(allSelected ? [] : groups);
+    state.search = '';
+    updateUI();
+  });
+  $('#viewOptions').addEventListener('click', e => {
+    const opt = e.target.closest('[data-view]'); if(!opt) return;
+    const v = opt.dataset.view;
+    state.views.has(v) ? state.views.delete(v) : state.views.add(v);
+    if(state.views.size === 0) state.views.add('resumen');
+    updateUI();
+  });
+  $('#connectBtn').addEventListener('click', () => loadFromUrl($('#sheetUrl').value.trim()));
+  $('#saveUrlBtn').addEventListener('click', () => { localStorage.setItem('jmm_sheet_csv_url', $('#sheetUrl').value.trim()); setStatus('good','URL guardada','Esta URL se usará automáticamente en este dispositivo.'); });
+  $('#clearDataBtn').addEventListener('click', () => { state.data=[]; localStorage.removeItem('jmm_sheet_csv_url'); $('#sheetUrl').value=''; setStatus('info','Datos limpiados','Puedes conectar otra hoja o cargar un CSV local.'); updateUI(); });
+  $('#csvFile').addEventListener('change', e => {
+    const file = e.target.files?.[0]; if(!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try{
+        const records = rowsToObjects(parseCSV(reader.result));
+        if(!records.length) throw new Error('El CSV no contiene registros válidos.');
+        state.data = records;
+        setStatus('good','CSV cargado',`${records.length} registros disponibles para analizar.`);
+        updateUI();
+      } catch(err){ setStatus('bad','No se pudo leer el CSV',err.message); }
+    };
+    reader.readAsText(file, 'utf-8');
+  });
+  $('#exportBtn').addEventListener('click', exportFiltered);
+  $('#printBtn').addEventListener('click', () => window.print());
+  updateUI();
+  if($('#sheetUrl').value.trim()) loadFromUrl($('#sheetUrl').value.trim());
+}
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
