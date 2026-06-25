@@ -352,10 +352,17 @@ function privacyName(fullName){
     .toLocaleLowerCase('es-MX')
     .replace(/^[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+|[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+$/g,"");
 
+  const capitalizeWord = word => {
+    const w = normalizeWord(word);
+    if(!w) return "";
+    const letters = Array.from(w);
+    return letters[0].toLocaleUpperCase('es-MX') + letters.slice(1).join("");
+  };
+
   const initial = word => {
     const w = normalizeWord(word);
     if(!w) return "";
-    return `${Array.from(w)[0]}.`;
+    return `${Array.from(w)[0].toLocaleUpperCase('es-MX')}.`;
   };
 
   let firstLastName = "";
@@ -378,7 +385,7 @@ function privacyName(fullName){
 
   const first = cleanPiece(firstLastName)
     .split(/\s+/)
-    .map(normalizeWord)
+    .map(capitalizeWord)
     .filter(Boolean)
     .join(" ");
 
