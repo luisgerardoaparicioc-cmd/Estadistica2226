@@ -340,19 +340,55 @@ const pct = n => Number.isFinite(n) ? `${Math.round(n)}%` : "—";
 const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[ch]));
 const normalize = txt => String(txt ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"");
 function privacyName(fullName){
-  const cleaned = String(fullName ?? "")
-    .replace(/[/*]/g," ")
+  const original = String(fullName ?? "").trim();
+  if(!original) return "—";
+
+  const cleanPiece = value => String(value ?? "")
     .replace(/[.,;:()\[\]{}]/g," ")
     .replace(/\s+/g," ")
     .trim();
-  if(!cleaned) return "—";
-  return cleaned.split(" ").map(word => {
-    const letters = Array.from(word).filter(ch => /[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]/.test(ch));
-    if(!letters.length) return "";
-    const first = letters[0].toLocaleUpperCase('es-MX');
-    const second = letters[1] ? letters[1].toLocaleLowerCase('es-MX') : "";
-    return `${first}${second}.`;
-  }).filter(Boolean).join(" ");
+
+  const normalizeWord = word => word
+    .toLocaleLowerCase('es-MX')
+    .replace(/^[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+|[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+$/g,"");
+
+  const initial = word => {
+    const w = normalizeWord(word);
+    if(!w) return "";
+    return `${Array.from(w)[0]}.`;
+  };
+
+  let firstLastName = "";
+  let remaining = "";
+
+  if(original.includes("/")){
+    const parts = original.split("/");
+    firstLastName = cleanPiece(parts.shift());
+    remaining = cleanPiece(parts.join(" ").replace(/\*/g," "));
+  } else if(original.includes("*")){
+    const parts = original.split("*");
+    const surnames = cleanPiece(parts.shift()).split(/\s+/).filter(Boolean);
+    firstLastName = surnames.shift() || "";
+    remaining = cleanPiece([...surnames, cleanPiece(parts.join(" "))].join(" "));
+  } else {
+    const words = cleanPiece(original).split(/\s+/).filter(Boolean);
+    firstLastName = words.shift() || "";
+    remaining = words.join(" ");
+  }
+
+  const first = cleanPiece(firstLastName)
+    .split(/\s+/)
+    .map(normalizeWord)
+    .filter(Boolean)
+    .join(" ");
+
+  const rest = cleanPiece(remaining)
+    .split(/\s+/)
+    .map(initial)
+    .filter(Boolean)
+    .join(" ");
+
+  return [first, rest].filter(Boolean).join(" ") || "—";
 }
 
 const fieldMap = new Map(REQUIRED_FIELDS.map(f => [normalize(f), f]));
