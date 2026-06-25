@@ -245,8 +245,7 @@
     <header class="hero">
       <div class="school-badge"><span class="pulse-dot"></span> Ciclo escolar 2025-2026</div>
       <h1>Análisis de estadísticas de cierre<br>Escuela Secundaria General “José María Mata”</h1>
-      <p class="subtitle">Panel móvil para analizar promedios, reprobación, aprobación por disciplina y desempeño por alumno con datos conectados desde Google Sheets.</p>
-    </header>
+          </header>
 
     <section class="grid">
       <div class="card glass">
@@ -292,11 +291,9 @@
     <section id="results" aria-live="polite"></section>
 
     <div class="toolbar">
-      <button class="btn secondary" id="exportBtn" type="button">Exportar CSV filtrado</button>
       <button class="btn ghost" id="printBtn" type="button">Imprimir</button>
     </div>
 
-    <p class="footer-note">Página estática compatible con GitHub Pages. Los datos se cargan automáticamente desde la conexión configurada con Google Sheets.</p>
     <footer class="author-footer"><span>Autor: Profr. Luis Gerardo Aparicio C.</span></footer>
   </main>
 
@@ -691,7 +688,8 @@ function init(){
     if(state.views.size === 0) state.views.add('resumen');
     updateUI();
   });
-  $('#exportBtn').addEventListener('click', exportFiltered);
+  const exportBtn = $('#exportBtn');
+  if (exportBtn) exportBtn.addEventListener('click', exportFiltered);
   $('#printBtn').addEventListener('click', () => window.print());
   updateUI();
   if(dataUrl) loadFromUrl(dataUrl);
