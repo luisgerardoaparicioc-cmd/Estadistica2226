@@ -135,20 +135,22 @@
     .option:not(.active){opacity:.78}
 
     .group-zone,.views-zone{display:none}.group-zone.show,.views-zone.show{display:block;animation:rise .35s ease both}
-    .chips{display:flex;gap:8px;flex-wrap:wrap}
+    .chips{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
     .chip{
       display:inline-flex;
       align-items:center;
       justify-content:center;
-      min-width:48px;
-      min-height:44px;
-      padding:9px 13px;
+      width:100%;
+      min-width:0;
+      min-height:56px;
+      padding:12px 8px;
+      font-size:1.28rem;
       background:#f8fafc;
       color:#334155;
       border:1px solid var(--line);
       position:relative;
     }
-    .chip span{font-size:.72rem;font-weight:700;color:#64748b;margin-left:5px}
+    .chip span{font-size:.76rem;font-weight:800;color:#64748b;margin-left:6px}
     .chip.active{background:linear-gradient(135deg,#f59e0b,#f97316);color:white;border-color:transparent;box-shadow:0 10px 20px rgba(249,115,22,.24)}
     .chip.active span{color:rgba(255,255,255,.84)}
     .options{display:grid;grid-template-columns:1fr;gap:8px}
@@ -320,8 +322,7 @@ const VIEWS = [
   {id:"disciplina", label:"Por disciplina"},
   {id:"reprobados", label:"Cantidad de reprobados"},
   {id:"promAlumnos", label:"Promedio de alumnos"},
-  {id:"masReprobadas", label:"Alumnos con mayor cantidad de reprobadas"},
-  {id:"rankingGrupo", label:"Ranking por grupo"}
+  {id:"masReprobadas", label:"Alumnos con mayor cantidad de reprobadas"}
 ];
 let state = {
   data: [],
@@ -613,25 +614,20 @@ function renderResults(){
   }
   intro.classList.add('hidden');
   if(!state.data.length){
-    res.innerHTML = `<div class="section-title"><h2>Resultados</h2><span class="pill">${state.grado}° · ${selectedGroups}</span></div><div class="empty">Aún no hay datos cargados. Verifica que la URL de Google Sheets o Apps Script esté configurada en la página.</div>`;
+    res.innerHTML = `<div class="section-title"><span class="pill">${state.grado}° · ${selectedGroups}</span></div><div class="empty">Aún no hay datos cargados. Verifica que la URL de Google Sheets o Apps Script esté configurada en la página.</div>`;
     return;
   }
   if(!data.length){
-    res.innerHTML = `<div class="section-title"><h2>Resultados</h2><span class="pill">${state.grado}° · ${selectedGroups}</span></div><div class="empty">No se encontraron registros para la selección actual.</div>`;
+    res.innerHTML = `<div class="section-title"><span class="pill">${state.grado}° · ${selectedGroups}</span></div><div class="empty">No se encontraron registros para la selección actual.</div>`;
     return;
   }
-  const parts = [`<div class="section-title"><h2>Resultados</h2><span class="pill">${state.turno} · ${state.grado}° · ${selectedGroups}</span></div>`];
-  if(state.views.has('resumen')) parts.push(`<article class="result-card"><h2>Resumen general</h2>${renderKpis(data)}<div style="margin-top:12px"><label for="searchStudent">Buscar alumno en la selección</label><input id="searchStudent" type="text" placeholder="Escribe parte del nombre..." value="${esc(state.search)}"></div></article>`);
+  const parts = [`<div class="section-title"><span class="pill">${state.turno} · ${state.grado}° · ${selectedGroups}</span></div>`];
+  if(state.views.has('resumen')) parts.push(`<article class="result-card"><h2>Resumen general</h2>${renderKpis(data)}</article>`);
   if(state.views.has('disciplina')) parts.push(`<article class="result-card"><h2>Estadísticas por disciplina</h2>${renderDiscipline(data,false)}</article>`);
   if(state.views.has('reprobados')) parts.push(`<article class="result-card"><h2>Cantidad de reprobados</h2>${renderFailed(data)}</article>`);
   if(state.views.has('promAlumnos')) parts.push(`<article class="result-card"><h2>Promedio de alumnos</h2>${renderDistribution(data)}<h3 style="margin-top:14px">Listado por promedio</h3>${renderStudentAverage(data)}</article>`);
   if(state.views.has('masReprobadas')) parts.push(`<article class="result-card"><h2>Alumnos con mayor cantidad de reprobadas</h2>${renderMostFailed(data)}</article>`);
-  if(state.views.has('rankingGrupo')) parts.push(`<article class="result-card"><h2>Ranking por grupo</h2>${renderRankingGroup(data)}</article>`);
   res.innerHTML = parts.join('');
-  const search = $('#searchStudent');
-  if(search){
-    search.addEventListener('input', e => { state.search = e.target.value; renderResults(); setTimeout(()=>$('#searchStudent')?.focus(),0); });
-  }
 }
 function updateUI(){
   renderGroupChips();
