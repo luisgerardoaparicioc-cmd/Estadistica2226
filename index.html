@@ -208,6 +208,26 @@
     .kpi .num{font-size:1.8rem;line-height:1;font-weight:950;letter-spacing:-.05em;color:#0f172a}
     .kpi .lbl{margin-top:7px;color:var(--muted);font-size:.78rem;font-weight:750}
     .kpi.good .num{color:var(--good)}.kpi.bad .num{color:var(--danger)}.kpi.info .num{color:var(--info)}.kpi.warn .num{color:#c2410c}
+    .summary-charts{display:grid;grid-template-columns:1fr;gap:10px;margin-top:12px}
+    .summary-chart{background:white;border:1px solid var(--line);border-radius:20px;padding:12px;min-height:160px;overflow:hidden}
+    .summary-chart h3{margin:0 0 10px;font-size:.92rem;color:#334155}
+    .donut-wrap{display:flex;align-items:center;gap:12px}
+    .donut{width:96px;height:96px;border-radius:50%;display:grid;place-items:center;position:relative;flex:0 0 auto}
+    .donut:after{content:"";position:absolute;inset:14px;background:white;border-radius:50%;box-shadow:inset 0 0 0 1px #e2e8f0}
+    .donut span{position:relative;z-index:1;font-weight:950;font-size:1.08rem;color:#0f172a}
+    .chart-legend{display:grid;gap:6px;font-size:.78rem;color:#475569}
+    .legend-row{display:flex;align-items:center;gap:7px}
+    .legend-dot{width:10px;height:10px;border-radius:999px;background:var(--good);flex:0 0 auto}
+    .legend-dot.bad{background:var(--danger)}.legend-dot.warn{background:var(--accent)}.legend-dot.info{background:var(--info)}
+    .chart-bars{display:grid;gap:8px}
+    .chart-row{display:grid;grid-template-columns:minmax(78px,120px) 1fr auto;align-items:center;gap:8px;font-size:.78rem;color:#475569}
+    .chart-label{font-weight:850;color:#334155;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .chart-track{height:12px;background:#e2e8f0;border-radius:999px;overflow:hidden}
+    .chart-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--primary),var(--primary2));border-radius:999px}
+    .chart-fill.bad{background:linear-gradient(90deg,#dc2626,#f97316)}
+    .chart-fill.warn{background:linear-gradient(90deg,#f59e0b,#facc15)}
+    .chart-fill.info{background:linear-gradient(90deg,#2563eb,#14b8a6)}
+    .chart-value{font-weight:900;color:#0f172a;white-space:nowrap}
     .section-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:18px 0 10px}
     .section-title h2{font-size:1.12rem;margin:0;color:white;text-shadow:0 1px 1px rgba(0,0,0,.15)}
     .pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:7px 10px;background:rgba(255,255,255,.16);color:white;border:1px solid rgba(255,255,255,.18);font-size:.75rem;font-weight:800}
@@ -236,8 +256,21 @@
     .grade-box{border-radius:14px;border:1px solid #e2e8f0;padding:9px;background:#f8fafc}
     .grade-box b{display:block;font-size:.75rem;color:#475569;margin-bottom:4px}.grade-box span{font-weight:900}
     .empty{padding:18px;border-radius:22px;background:rgba(255,255,255,.90);border:1px dashed #cbd5e1;text-align:center;color:#475569;animation:rise .35s ease both}
-    .toolbar{position:sticky;bottom:10px;z-index:20;margin:18px 0 0;display:flex;gap:8px;justify-content:center}
-    .toolbar .btn{box-shadow:0 14px 35px rgba(2,8,23,.25)}
+    .toolbar{position:fixed;left:0;right:0;bottom:12px;z-index:50;margin:0;display:flex;gap:8px;justify-content:center;padding:0 14px;pointer-events:none}
+    .toolbar .btn{box-shadow:0 14px 35px rgba(2,8,23,.25);pointer-events:auto;min-width:min(92vw,280px)}
+    .toolbar .btn[disabled]{opacity:.72;cursor:progress}
+    #pdfExportArea{position:absolute;left:-99999px;top:0;width:794px;background:white;color:#0f172a;padding:22px;font-family:Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif}
+    #pdfExportArea .pdf-title{font-size:21px;line-height:1.15;font-weight:950;letter-spacing:-.03em;margin-bottom:6px;color:#0f172a}
+    #pdfExportArea .pdf-subtitle{font-size:11px;color:#475569;margin-bottom:12px}
+    #pdfExportArea .pdf-author{margin-top:12px;padding-top:10px;border-top:1px solid #e2e8f0;font-size:11px;color:#334155;font-weight:850;text-align:center}
+    #pdfExportArea .section-title{margin:8px 0 10px}
+    #pdfExportArea .pill{background:#f1f5f9;color:#0f172a;border-color:#cbd5e1}
+    #pdfExportArea .result-card{box-shadow:none;border:1px solid #dbe4f0;background:#fff;break-inside:avoid}
+    #pdfExportArea .kpis{grid-template-columns:repeat(4,1fr)}
+    #pdfExportArea .summary-charts{grid-template-columns:repeat(3,1fr)}
+    #pdfExportArea .summary-chart{break-inside:avoid}
+    #pdfExportArea table{min-width:680px}
+    #pdfExportArea th{position:static}
     .hidden{display:none!important}
     .footer-note{margin-top:16px;color:rgba(255,255,255,.75);font-size:.78rem;line-height:1.45;text-align:center}
     .author-footer{margin:14px auto 0;padding:12px 14px;border:1px solid rgba(255,255,255,.22);border-radius:18px;background:rgba(255,255,255,.10);color:rgba(255,255,255,.92);font-weight:800;text-align:center;box-shadow:0 10px 24px rgba(0,0,0,.14);backdrop-filter:blur(10px)}
@@ -253,6 +286,7 @@
       .app{padding:22px 22px 100px}.hero{padding:34px 28px}
       .grid.two{grid-template-columns:1.05fr .95fr}.grid.three{grid-template-columns:repeat(3,1fr)}
       .options{grid-template-columns:repeat(2,1fr)}.kpis{grid-template-columns:repeat(4,1fr)}
+      .summary-charts{grid-template-columns:1fr 1fr 1fr}
       .student-grid{grid-template-columns:repeat(3,1fr)}
     }
     @media print{
@@ -311,12 +345,14 @@
     <section id="results" aria-live="polite"></section>
 
     <div class="toolbar">
-      <button class="btn ghost" id="printBtn" type="button">Imprimir</button>
+      <button class="btn ghost" id="printBtn" type="button">Imprimir PDF</button>
     </div>
 
     <footer class="author-footer"><span>Autor: Profr. Luis Gerardo Aparicio C.</span></footer>
   </main>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
 /*
   CONEXIÓN CON GOOGLE SHEETS / APPS SCRIPT
@@ -600,6 +636,50 @@ function renderKpis(data){
     <div class="kpi"><div class="num">${pct(data.length ? allPassed/data.length*100 : null)}</div><div class="lbl">Aprobación total</div></div>
     <div class="kpi"><div class="num">${pct(data.length ? withFailed/data.length*100 : null)}</div><div class="lbl">Alumnos en riesgo</div></div>
     <div class="kpi"><div class="num">${state.grado || '—'}°</div><div class="lbl">Grado analizado</div></div>
+  </div>${renderSummaryCharts(data, {globalAvg, withFailed, allPassed, totalFails})}`;
+}
+function chartFillClass(value){
+  if(!Number.isFinite(value)) return '';
+  if(value < 6) return 'bad';
+  if(value < 7.5) return 'warn';
+  return 'info';
+}
+function renderSummaryCharts(data, summary){
+  const approvalPct = data.length ? summary.allPassed/data.length*100 : 0;
+  const riskPct = data.length ? summary.withFailed/data.length*100 : 0;
+  const donutDeg = Math.max(0, Math.min(100, approvalPct)) * 3.6;
+  const groupRows = groupStats(data).filter(g => g.total > 0).map(g => {
+    const width = Number.isFinite(g.avg) ? Math.max(0, Math.min(100, g.avg*10)) : 0;
+    return `<div class="chart-row"><div class="chart-label">Grupo ${esc(g.group)}</div><div class="chart-track"><div class="chart-fill ${chartFillClass(g.avg)}" style="width:${width}%"></div></div><div class="chart-value">${fmt(g.avg)}</div></div>`;
+  }).join('') || `<div class="tiny">No hay grupos con registros.</div>`;
+
+  const dStats = disciplineStats(data).sort((a,b)=>b.failed-a.failed || (a.avg??99)-(b.avg??99)).slice(0,5);
+  const maxFailed = Math.max(1, ...dStats.map(s => s.failed));
+  const failedRows = dStats.map(s => {
+    const width = s.failed ? Math.max(6, s.failed/maxFailed*100) : 2;
+    return `<div class="chart-row"><div class="chart-label" title="${esc(s.discipline)}">${esc(s.discipline)}</div><div class="chart-track"><div class="chart-fill ${s.failed ? 'bad' : ''}" style="width:${width}%"></div></div><div class="chart-value">${s.failed}</div></div>`;
+  }).join('') || `<div class="tiny">No hay disciplinas evaluadas.</div>`;
+
+  return `<div class="summary-charts">
+    <div class="summary-chart">
+      <h3>Aprobación total</h3>
+      <div class="donut-wrap">
+        <div class="donut" style="background:conic-gradient(#16a34a ${donutDeg}deg,#fee2e2 0deg)"><span>${pct(approvalPct)}</span></div>
+        <div class="chart-legend">
+          <div class="legend-row"><span class="legend-dot"></span><b>${summary.allPassed}</b> aprobados en todas</div>
+          <div class="legend-row"><span class="legend-dot bad"></span><b>${summary.withFailed}</b> con riesgo</div>
+          <div class="tiny">Riesgo: ${pct(riskPct)}</div>
+        </div>
+      </div>
+    </div>
+    <div class="summary-chart">
+      <h3>Promedio por grupo</h3>
+      <div class="chart-bars">${groupRows}</div>
+    </div>
+    <div class="summary-chart">
+      <h3>Reprobadas por disciplina</h3>
+      <div class="chart-bars">${failedRows}</div>
+    </div>
   </div>`;
 }
 function table(headers, rows){
@@ -719,6 +799,82 @@ function exportFiltered(){
   document.body.appendChild(a); a.click(); a.remove();
   URL.revokeObjectURL(a.href);
 }
+function pdfLibrariesReady(){
+  return !!(window.html2canvas && window.jspdf && window.jspdf.jsPDF);
+}
+function pdfFileName(){
+  const turno = state.turno || 'turno';
+  const grado = state.grado ? `${state.grado}grado` : 'grado';
+  const grupos = Array.from(state.groups).sort().join('-') || 'grupos';
+  const stamp = new Date().toISOString().slice(0,10);
+  return `estadisticas_${turno}_${grado}_${grupos}_${stamp}.pdf`.replace(/[^a-z0-9_\-.]/gi,'_');
+}
+async function downloadVisiblePdf(){
+  const results = $('#results');
+  if(!results || !results.innerHTML.trim()){
+    alert('Primero selecciona turno, grado y grupo(s) para generar información.');
+    return;
+  }
+  if(!pdfLibrariesReady()){
+    alert('No se pudieron cargar las librerías para generar el PDF. Revisa que el dispositivo tenga conexión a internet y vuelve a intentarlo.');
+    return;
+  }
+  const btn = $('#printBtn');
+  const oldText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Generando PDF...';
+  const selectedGroups = Array.from(state.groups).sort().join(', ') || '—';
+  const selectedTurno = state.turno ? state.turno.charAt(0).toUpperCase() + state.turno.slice(1) : '—';
+  const area = document.createElement('div');
+  area.id = 'pdfExportArea';
+  area.innerHTML = `
+    <div class="pdf-title">Análisis de estadísticas de cierre<br>Escuela Secundaria General “José María Mata”</div>
+    <div class="pdf-subtitle">Información visible · Turno: ${esc(selectedTurno)} · Grado: ${esc(state.grado || '—')}° · Grupos: ${esc(selectedGroups)}</div>
+    <div class="pdf-results">${results.innerHTML}</div>
+    <div class="pdf-author">Autor: Profr. Luis Gerardo Aparicio C.</div>`;
+  document.body.appendChild(area);
+  try{
+    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    const canvas = await html2canvas(area, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#ffffff',
+      scrollX: 0,
+      scrollY: 0,
+      windowWidth: area.scrollWidth,
+      width: area.scrollWidth,
+      height: area.scrollHeight
+    });
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p', 'mm', 'letter');
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const margin = 8;
+    const usableWidth = pageWidth - margin * 2;
+    const usableHeight = pageHeight - margin * 2;
+    const imgWidth = usableWidth;
+    const imgHeight = canvas.height * imgWidth / canvas.width;
+    const imgData = canvas.toDataURL('image/jpeg', 0.98);
+    let heightLeft = imgHeight;
+    let position = margin;
+    pdf.addImage(imgData, 'JPEG', margin, position, imgWidth, imgHeight);
+    heightLeft -= usableHeight;
+    while(heightLeft > 0){
+      pdf.addPage();
+      position = margin - (imgHeight - heightLeft);
+      pdf.addImage(imgData, 'JPEG', margin, position, imgWidth, imgHeight);
+      heightLeft -= usableHeight;
+    }
+    pdf.save(pdfFileName());
+  } catch(err){
+    console.error(err);
+    alert('No se pudo generar el PDF. Intenta nuevamente o reduce la cantidad de secciones visibles.');
+  } finally{
+    area.remove();
+    btn.disabled = false;
+    btn.textContent = oldText;
+  }
+}
 function init(){
   const urlParam = new URLSearchParams(location.search).get('sheet') || '';
   const dataUrl = urlParam || SHEET_CSV_URL;
@@ -761,7 +917,7 @@ function init(){
   });
   const exportBtn = $('#exportBtn');
   if (exportBtn) exportBtn.addEventListener('click', exportFiltered);
-  $('#printBtn').addEventListener('click', () => window.print());
+  $('#printBtn').addEventListener('click', downloadVisiblePdf);
   updateUI();
   if(dataUrl) loadFromUrl(dataUrl);
   else setStatus('bad','Sin URL configurada','Pega la URL de Apps Script o CSV en SHEET_CSV_URL dentro del archivo index.html.');
