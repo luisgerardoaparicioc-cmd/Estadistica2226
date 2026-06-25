@@ -134,7 +134,25 @@
     .seg-btn.active .moon{filter:drop-shadow(0 0 8px rgba(191,219,254,.85))}
     .option:not(.active){opacity:.78}
 
-    .group-zone,.views-zone{display:none}.group-zone.show,.views-zone.show{display:block;animation:rise .35s ease both}
+    .grade-zone,.group-zone,.views-zone{display:none}
+    .grade-zone.show,.group-zone.show,.views-zone.show{display:block;animation:rise .35s ease both}
+    .grade-buttons{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    .grade-btn{
+      display:grid;
+      place-items:center;
+      gap:3px;
+      min-height:66px;
+      padding:12px 8px;
+      background:#f8fafc;
+      color:#334155;
+      border:1px solid var(--line);
+      border-radius:18px;
+      font-size:1.45rem;
+      font-weight:950;
+    }
+    .grade-btn span{font-size:.72rem;font-weight:850;color:#64748b}
+    .grade-btn.active{background:linear-gradient(135deg,#2563eb,#14b8a6);color:white;border-color:transparent;box-shadow:0 12px 22px rgba(37,99,235,.20)}
+    .grade-btn.active span{color:rgba(255,255,255,.86)}
     .chips{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
     .chip{
       display:inline-flex;
@@ -256,18 +274,18 @@
           <div>
             <label>Turno</label>
             <div class="segmented" id="turnoBtns">
-              <button class="seg-btn active" data-turno="matutino"><span class="turn-icon sun">☀️</span> Matutino</button>
+              <button class="seg-btn" data-turno="matutino"><span class="turn-icon sun">☀️</span> Matutino</button>
               <button class="seg-btn" data-turno="vespertino"><span class="turn-icon moon">🌙</span> Vespertino</button>
             </div>
           </div>
-          <div>
-            <label for="gradeSelect">Grado</label>
-            <select id="gradeSelect" aria-label="Seleccionar grado">
-              <option value="">Selecciona un grado</option>
-              <option value="1">1°</option>
-              <option value="2">2°</option>
-              <option value="3">3°</option>
-            </select>
+          <div class="grade-zone" id="gradeZone">
+            <label>Grado</label>
+            <div class="grade-buttons" id="gradeBtns" aria-label="Seleccionar grado">
+              <button type="button" class="grade-btn" data-grade="1">1°<span>Primer grado</span></button>
+              <button type="button" class="grade-btn" data-grade="2">2°<span>Segundo grado</span></button>
+              <button type="button" class="grade-btn" data-grade="3">3°<span>Tercer grado</span></button>
+            </div>
+            <p class="tiny">Después de elegir el turno, selecciona el grado para mostrar los grupos disponibles.</p>
           </div>
           <div class="group-zone" id="groupZone">
             <div class="row" style="justify-content:space-between;margin-bottom:8px">
@@ -287,7 +305,7 @@
     </section>
 
     <section id="analysisIntro" class="empty" style="margin-top:14px">
-      Selecciona turno, grado y uno o más grupos para generar las estadísticas.
+      Selecciona primero el turno; después elige grado y uno o más grupos para generar las estadísticas.
     </section>
 
     <section id="results" aria-live="polite"></section>
@@ -305,7 +323,7 @@
   Pega en SHEET_CSV_URL la URL pública de tu Apps Script o CSV publicado.
   La página cargará los datos automáticamente al abrirse en GitHub Pages.
 */
-const SHEET_CSV_URL = "https://script.google.com/macros/s/AKfycbyvGRPjvQ1uTEcHovgo2MT_n4xOXvmZDshX58okYDkwYCmOVjs0sWa6ecWNWzw9S6M7PA/exec";
+const SHEET_CSV_URL = "";
 const PASSING_GRADE = 6;
 const MATUTINO_GROUPS = ["A","B","C","D","E","F"];
 const VESPERTINO_GROUPS = ["G","H","I","J","K","L"];
@@ -327,7 +345,7 @@ const VIEWS = [
 let state = {
   data: [],
   loadStatus: null,
-  turno: "matutino",
+  turno: "",
   grado: "",
   groups: new Set(),
   views: new Set(VIEWS.filter(v=>v.default).map(v=>v.id)),
@@ -494,7 +512,7 @@ async function loadFromUrl(url){
     setStatus('bad','No se pudo cargar la hoja',`${err.message}. Revisa la URL configurada en SHEET_CSV_URL y que el Apps Script esté publicado para cualquier usuario.`);
   }
 }
-function availableGroups(){ return state.turno === 'matutino' ? MATUTINO_GROUPS : VESPERTINO_GROUPS; }
+function availableGroups(){ if(!state.turno) return []; return state.turno === 'matutino' ? MATUTINO_GROUPS : VESPERTINO_GROUPS; }
 function groupCount(group){ return state.data.filter(r => r.Grado === state.grado && r.Grupo === group).length; }
 function filteredData(){
   let data = state.data.filter(r => r.Grado === state.grado && state.groups.has(r.Grupo));
@@ -540,10 +558,17 @@ function groupStats(data){
     return {group:g,total:subset.length,avg:avgs.length?avgs.reduce((a,b)=>a+b,0)/avgs.length:null,failedStudents,allPassed:st.filter(s=>s._valid>0 && s._failed===0).length};
   });
 }
+function renderGradeButtons(){
+  const zone = $('#gradeZone');
+  zone.classList.toggle('show', !!state.turno);
+  $$('#gradeBtns .grade-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.grade === state.grado);
+  });
+}
 function renderGroupChips(){
   const zone = $('#groupZone');
   const chips = $('#groupChips');
-  zone.classList.toggle('show', !!state.grado);
+  zone.classList.toggle('show', !!state.turno && !!state.grado);
   chips.innerHTML = availableGroups().map(g => {
     const active = state.groups.has(g);
     const count = groupCount(g);
@@ -673,6 +698,7 @@ function renderResults(){
   res.innerHTML = parts.join('');
 }
 function updateUI(){
+  renderGradeButtons();
   renderGroupChips();
   renderViews();
   renderResults();
@@ -699,11 +725,17 @@ function init(){
   $('#turnoBtns').addEventListener('click', e => {
     const btn = e.target.closest('[data-turno]'); if(!btn) return;
     state.turno = btn.dataset.turno;
+    state.grado = '';
     state.groups.clear(); state.search = ''; resetViewsToSummary();
     $$('#turnoBtns .seg-btn').forEach(b => b.classList.toggle('active', b === btn));
     updateUI();
   });
-  $('#gradeSelect').addEventListener('change', e => { state.grado = e.target.value; state.groups.clear(); state.search = ''; resetViewsToSummary(); updateUI(); });
+  $('#gradeBtns').addEventListener('click', e => {
+    const btn = e.target.closest('[data-grade]'); if(!btn) return;
+    state.grado = btn.dataset.grade;
+    state.groups.clear(); state.search = ''; resetViewsToSummary();
+    updateUI();
+  });
   $('#groupChips').addEventListener('click', e => {
     const chip = e.target.closest('[data-group]'); if(!chip) return;
     const g = chip.dataset.group;
