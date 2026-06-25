@@ -128,6 +128,12 @@
     .btn.ghost{background:#f8fafc;color:#334155;box-shadow:none;border:1px solid var(--line)}
     .seg-btn{background:#f8fafc;color:#475569;border:1px solid var(--line);min-height:46px;padding:10px}
     .seg-btn.active{background:linear-gradient(135deg,#0f766e,#14b8a6);color:white;border-color:transparent;box-shadow:0 12px 22px rgba(15,118,110,.22)}
+    .turn-icon{display:inline-flex;align-items:center;justify-content:center;margin-right:6px;font-size:1.12rem;filter:drop-shadow(0 1px 1px rgba(0,0,0,.15));animation:softSpin 4.5s linear infinite}
+    .turn-icon.moon{animation:moonFloat 2.6s ease-in-out infinite}
+    .seg-btn.active .sun{filter:drop-shadow(0 0 8px rgba(253,224,71,.75))}
+    .seg-btn.active .moon{filter:drop-shadow(0 0 8px rgba(191,219,254,.85))}
+    .option:not(.active){opacity:.78}
+
     .group-zone,.views-zone{display:none}.group-zone.show,.views-zone.show{display:block;animation:rise .35s ease both}
     .chips{display:flex;gap:8px;flex-wrap:wrap}
     .chip{
@@ -214,11 +220,15 @@
     .toolbar .btn{box-shadow:0 14px 35px rgba(2,8,23,.25)}
     .hidden{display:none!important}
     .footer-note{margin-top:16px;color:rgba(255,255,255,.75);font-size:.78rem;line-height:1.45;text-align:center}
+    .author-footer{margin:14px auto 0;padding:12px 14px;border:1px solid rgba(255,255,255,.22);border-radius:18px;background:rgba(255,255,255,.10);color:rgba(255,255,255,.92);font-weight:800;text-align:center;box-shadow:0 10px 24px rgba(0,0,0,.14);backdrop-filter:blur(10px)}
+    .author-footer span{display:inline-flex;align-items:center;gap:6px}
     .install-note{display:none}
     @keyframes pulse{70%{box-shadow:0 0 0 10px rgba(52,211,153,0)}100%{box-shadow:0 0 0 0 rgba(52,211,153,0)}}
     @keyframes dropIn{from{opacity:0;transform:translateY(-16px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
     @keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
     @keyframes float{0%,100%{transform:translate3d(0,0,0)}50%{transform:translate3d(12px,-10px,0)}}
+    @keyframes softSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+    @keyframes moonFloat{0%,100%{transform:translateY(0) rotate(-8deg)}50%{transform:translateY(-2px) rotate(8deg)}}
     @media (min-width:760px){
       .app{padding:22px 22px 100px}.hero{padding:34px 28px}
       .grid.two{grid-template-columns:1.05fr .95fr}.grid.three{grid-template-columns:repeat(3,1fr)}
@@ -245,8 +255,8 @@
           <div>
             <label>Turno</label>
             <div class="segmented" id="turnoBtns">
-              <button class="seg-btn active" data-turno="matutino">Matutino</button>
-              <button class="seg-btn" data-turno="vespertino">Vespertino</button>
+              <button class="seg-btn active" data-turno="matutino"><span class="turn-icon sun">☀️</span> Matutino</button>
+              <button class="seg-btn" data-turno="vespertino"><span class="turn-icon moon">🌙</span> Vespertino</button>
             </div>
           </div>
           <div>
@@ -268,6 +278,7 @@
           </div>
           <div class="views-zone" id="viewsZone">
             <label>¿Qué quieres mostrar?</label>
+            <p class="tiny" style="margin:0 0 7px">Al elegir grupo(s) se muestra primero el Resumen general; activa otros análisis solo cuando los necesites.</p>
             <div class="options" id="viewOptions"></div>
           </div>
         </div>
@@ -286,6 +297,7 @@
     </div>
 
     <p class="footer-note">Página estática compatible con GitHub Pages. Los datos se cargan automáticamente desde la conexión configurada con Google Sheets.</p>
+    <footer class="author-footer"><span>Autor: Profr. Luis Gerardo Aparicio C.</span></footer>
   </main>
 
 <script>
@@ -294,7 +306,7 @@
   Pega en SHEET_CSV_URL la URL pública de tu Apps Script o CSV publicado.
   La página cargará los datos automáticamente al abrirse en GitHub Pages.
 */
-const SHEET_CSV_URL = "https://script.google.com/macros/s/AKfycbyvGRPjvQ1uTEcHovgo2MT_n4xOXvmZDshX58okYDkwYCmOVjs0sWa6ecWNWzw9S6M7PA/exec";
+const SHEET_CSV_URL = "";
 const PASSING_GRADE = 6;
 const MATUTINO_GROUPS = ["A","B","C","D","E","F"];
 const VESPERTINO_GROUPS = ["G","H","I","J","K","L"];
@@ -308,14 +320,10 @@ const REQUIRED_FIELDS = [
 ];
 const VIEWS = [
   {id:"resumen", label:"Resumen general", default:true},
-  {id:"disciplina", label:"Por disciplina", default:true},
-  {id:"alumno", label:"Por alumno"},
+  {id:"disciplina", label:"Por disciplina"},
   {id:"reprobados", label:"Cantidad de reprobados"},
-  {id:"promDisciplina", label:"Promedio por disciplina"},
   {id:"promAlumnos", label:"Promedio de alumnos"},
   {id:"masReprobadas", label:"Alumnos con mayor cantidad de reprobadas"},
-  {id:"promAlto", label:"Alumnos con promedio más alto", default:true},
-  {id:"aprobadosTodas", label:"Aprobados en todas las disciplinas"},
   {id:"rankingGrupo", label:"Ranking por grupo"}
 ];
 let state = {
@@ -333,6 +341,22 @@ const fmt = n => Number.isFinite(n) ? (Math.round(n*10)/10).toFixed(1) : "—";
 const pct = n => Number.isFinite(n) ? `${Math.round(n)}%` : "—";
 const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[ch]));
 const normalize = txt => String(txt ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"");
+function privacyName(fullName){
+  const cleaned = String(fullName ?? "")
+    .replace(/[/*]/g," ")
+    .replace(/[.,;:()\[\]{}]/g," ")
+    .replace(/\s+/g," ")
+    .trim();
+  if(!cleaned) return "—";
+  return cleaned.split(" ").map(word => {
+    const letters = Array.from(word).filter(ch => /[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]/.test(ch));
+    if(!letters.length) return "";
+    const first = letters[0].toLocaleUpperCase('es-MX');
+    const second = letters[1] ? letters[1].toLocaleLowerCase('es-MX') : "";
+    return `${first}${second}.`;
+  }).filter(Boolean).join(" ");
+}
+
 const fieldMap = new Map(REQUIRED_FIELDS.map(f => [normalize(f), f]));
 fieldMap.set("nombrealumno", "Nombre completo");
 fieldMap.set("nombre", "Nombre completo");
@@ -489,6 +513,9 @@ function renderViews(){
   $('#viewsZone').classList.toggle('show', state.groups.size > 0);
   $('#viewOptions').innerHTML = VIEWS.map(v => `<button type="button" class="option ${state.views.has(v.id)?'active':''}" data-view="${v.id}"><span class="check">✓</span><span>${esc(v.label)}</span></button>`).join('');
 }
+function resetViewsToSummary(){
+  state.views = new Set(['resumen']);
+}
 function renderKpis(data){
   const st = studentStats(data);
   const avgValues = st.map(s => s._avg).filter(Number.isFinite);
@@ -532,22 +559,22 @@ function renderFailed(data){
 }
 function renderStudentAverage(data){
   const st = studentStats(data).sort((a,b)=>(b._avg??-1)-(a._avg??-1));
-  const rows = st.map(s => `<tr><td>${s.Grupo}</td><td>${esc(s['Nombre completo'])}</td><td><b>${fmt(s._avg)}</b></td><td>${s._failed ? `<span class="badge bad">${s._failed}</span>` : `<span class="badge good">0</span>`}</td><td>${s._failedList.map(esc).join(', ') || '—'}</td></tr>`);
+  const rows = st.map(s => `<tr><td>${s.Grupo}</td><td>${esc(privacyName(s['Nombre completo']))}</td><td><b>${fmt(s._avg)}</b></td><td>${s._failed ? `<span class="badge bad">${s._failed}</span>` : `<span class="badge good">0</span>`}</td><td>${s._failedList.map(esc).join(', ') || '—'}</td></tr>`);
   return table(['Grupo','Alumno','Promedio','Reprobadas','Disciplinas reprobadas'], rows);
 }
 function renderTop(data){
   const st = studentStats(data).filter(s=>Number.isFinite(s._avg)).sort((a,b)=>b._avg-a._avg || a['Nombre completo'].localeCompare(b['Nombre completo'])).slice(0,15);
-  return `<div class="rank-list">${st.map((s,i)=>`<div class="rank-item"><div class="rank-num">${i+1}</div><div><div class="student-name">${esc(s['Nombre completo'])}</div><div class="student-meta">${s.Grado}° ${s.Grupo} · ${s._failed} reprobadas</div></div><span class="badge good">${fmt(s._avg)}</span></div>`).join('')}</div>`;
+  return `<div class="rank-list">${st.map((s,i)=>`<div class="rank-item"><div class="rank-num">${i+1}</div><div><div class="student-name">${esc(privacyName(s['Nombre completo']))}</div><div class="student-meta">${s.Grado}° ${s.Grupo} · ${s._failed} reprobadas</div></div><span class="badge good">${fmt(s._avg)}</span></div>`).join('')}</div>`;
 }
 function renderMostFailed(data){
   const st = studentStats(data).filter(s=>s._failed>0).sort((a,b)=>b._failed-a._failed || (a._avg??99)-(b._avg??99)).slice(0,30);
   if(!st.length) return `<div class="empty">No hay alumnos con disciplinas reprobadas en la selección.</div>`;
-  return `<div class="rank-list">${st.map((s,i)=>`<div class="rank-item"><div class="rank-num">${i+1}</div><div><div class="student-name">${esc(s['Nombre completo'])}</div><div class="student-meta">${s.Grado}° ${s.Grupo} · ${esc(s._failedList.join(', '))}</div></div><span class="badge bad">${s._failed}</span></div>`).join('')}</div>`;
+  return `<div class="rank-list">${st.map((s,i)=>`<div class="rank-item"><div class="rank-num">${i+1}</div><div><div class="student-name">${esc(privacyName(s['Nombre completo']))}</div><div class="student-meta">${s.Grado}° ${s.Grupo} · ${esc(s._failedList.join(', '))}</div></div><span class="badge bad">${s._failed}</span></div>`).join('')}</div>`;
 }
 function renderAllPassed(data){
   const st = studentStats(data).filter(s => s._valid > 0 && s._failed === 0).sort((a,b)=>(b._avg??0)-(a._avg??0));
   return `<div class="status good" style="margin-bottom:10px"><div class="status-icon">✓</div><div><b>${st.length} alumnos aprobados en todas las disciplinas.</b><br><span class="muted">Representan ${pct(data.length ? st.length/data.length*100 : null)} de la selección.</span></div></div>` +
-    table(['Grupo','Alumno','Promedio'], st.map(s => `<tr><td>${s.Grupo}</td><td>${esc(s['Nombre completo'])}</td><td><b>${fmt(s._avg)}</b></td></tr>`));
+    table(['Grupo','Alumno','Promedio'], st.map(s => `<tr><td>${s.Grupo}</td><td>${esc(privacyName(s['Nombre completo']))}</td><td><b>${fmt(s._avg)}</b></td></tr>`));
 }
 function renderRankingGroup(data){
   const stats = groupStats(data).sort((a,b)=>(b.avg??0)-(a.avg??0));
@@ -574,7 +601,7 @@ function renderByStudent(data){
   const st = studentStats(data).sort((a,b)=>a.Grupo.localeCompare(b.Grupo) || a['Nombre completo'].localeCompare(b['Nombre completo']));
   return `<div class="stack">${st.map(s => {
     const gradeBoxes = DISCIPLINES.filter(d => Number.isFinite(s[d])).map(d => `<div class="grade-box"><b>${esc(d)}</b><span class="${s[d] < PASSING_GRADE ? 'bad-text' : ''}">${fmt(s[d])}</span></div>`).join('');
-    return `<details><summary><span>${esc(s['Nombre completo'])}<br><span class="student-meta">${s.Grado}° ${s.Grupo} · Promedio ${fmt(s._avg)}</span></span>${s._failed ? `<span class="badge bad">${s._failed} rep.</span>`:`<span class="badge good">Aprobado</span>`}</summary><div class="student-grid">${gradeBoxes}</div></details>`;
+    return `<details><summary><span>${esc(privacyName(s['Nombre completo']))}<br><span class="student-meta">${s.Grado}° ${s.Grupo} · Promedio ${fmt(s._avg)}</span></span>${s._failed ? `<span class="badge bad">${s._failed} rep.</span>`:`<span class="badge good">Aprobado</span>`}</summary><div class="student-grid">${gradeBoxes}</div></details>`;
   }).join('')}</div>`;
 }
 function renderResults(){
@@ -600,13 +627,9 @@ function renderResults(){
   if(state.views.has('resumen')) parts.push(`<article class="result-card"><h2>Resumen general</h2>${renderKpis(data)}<div style="margin-top:12px"><label for="searchStudent">Buscar alumno en la selección</label><input id="searchStudent" type="text" placeholder="Escribe parte del nombre..." value="${esc(state.search)}"></div></article>`);
   if(state.views.has('disciplina')) parts.push(`<article class="result-card"><h2>Estadísticas por disciplina</h2>${renderDiscipline(data,false)}</article>`);
   if(state.views.has('reprobados')) parts.push(`<article class="result-card"><h2>Cantidad de reprobados</h2>${renderFailed(data)}</article>`);
-  if(state.views.has('promDisciplina')) parts.push(`<article class="result-card"><h2>Promedio por disciplina</h2>${renderDiscipline(data,true)}</article>`);
   if(state.views.has('promAlumnos')) parts.push(`<article class="result-card"><h2>Promedio de alumnos</h2>${renderDistribution(data)}<h3 style="margin-top:14px">Listado por promedio</h3>${renderStudentAverage(data)}</article>`);
   if(state.views.has('masReprobadas')) parts.push(`<article class="result-card"><h2>Alumnos con mayor cantidad de reprobadas</h2>${renderMostFailed(data)}</article>`);
-  if(state.views.has('promAlto')) parts.push(`<article class="result-card"><h2>Alumnos con promedio más alto</h2>${renderTop(data)}</article>`);
-  if(state.views.has('aprobadosTodas')) parts.push(`<article class="result-card"><h2>Aprobados en todas las disciplinas</h2>${renderAllPassed(data)}</article>`);
   if(state.views.has('rankingGrupo')) parts.push(`<article class="result-card"><h2>Ranking por grupo</h2>${renderRankingGroup(data)}</article>`);
-  if(state.views.has('alumno')) parts.push(`<article class="result-card"><h2>Análisis por alumno</h2>${renderByStudent(data)}</article>`);
   res.innerHTML = parts.join('');
   const search = $('#searchStudent');
   if(search){
@@ -625,7 +648,7 @@ function csvEscape(v){
 function exportFiltered(){
   const data = filteredData();
   if(!data.length){ alert('No hay datos filtrados para exportar.'); return; }
-  const rows = [REQUIRED_FIELDS, ...data.map(r => REQUIRED_FIELDS.map(f => Number.isFinite(r[f]) ? r[f] : (r[f] ?? '')))];
+  const rows = [REQUIRED_FIELDS, ...data.map(r => REQUIRED_FIELDS.map(f => f === 'Nombre completo' ? privacyName(r[f]) : (Number.isFinite(r[f]) ? r[f] : (r[f] ?? ''))))];
   const csv = rows.map(row => row.map(csvEscape).join(',')).join('\n');
   const blob = new Blob(["\uFEFF" + csv], {type:'text/csv;charset=utf-8'});
   const a = document.createElement('a');
@@ -640,16 +663,17 @@ function init(){
   $('#turnoBtns').addEventListener('click', e => {
     const btn = e.target.closest('[data-turno]'); if(!btn) return;
     state.turno = btn.dataset.turno;
-    state.groups.clear(); state.search = '';
+    state.groups.clear(); state.search = ''; resetViewsToSummary();
     $$('#turnoBtns .seg-btn').forEach(b => b.classList.toggle('active', b === btn));
     updateUI();
   });
-  $('#gradeSelect').addEventListener('change', e => { state.grado = e.target.value; state.groups.clear(); state.search = ''; updateUI(); });
+  $('#gradeSelect').addEventListener('change', e => { state.grado = e.target.value; state.groups.clear(); state.search = ''; resetViewsToSummary(); updateUI(); });
   $('#groupChips').addEventListener('click', e => {
     const chip = e.target.closest('[data-group]'); if(!chip) return;
     const g = chip.dataset.group;
     state.groups.has(g) ? state.groups.delete(g) : state.groups.add(g);
     state.search = '';
+    resetViewsToSummary();
     updateUI();
   });
   $('#toggleAllGroups').addEventListener('click', () => {
@@ -657,6 +681,7 @@ function init(){
     const allSelected = groups.every(g => state.groups.has(g));
     state.groups = new Set(allSelected ? [] : groups);
     state.search = '';
+    resetViewsToSummary();
     updateUI();
   });
   $('#viewOptions').addEventListener('click', e => {
